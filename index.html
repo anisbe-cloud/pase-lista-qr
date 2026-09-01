@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1">
+
+<title>Pase de Lista QR</title>
+
+<script src="https://unpkg.com/html5-qrcode"
+        type="text/javascript">
+</script>
+
+<style>
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  background: #f2f4f7;
+}
+
+.contenedor {
+  max-width: 550px;
+  margin: auto;
+}
+
+.titulo {
+  background: white;
+  padding: 20px;
+  border-radius: 18px;
+  text-align: center;
+  margin-bottom: 15px;
+  box-shadow: 0 3px 12px rgba(0,0,0,.10);
+}
+
+.titulo h1 {
+  margin: 0;
+}
+
+.titulo p {
+  color: #666;
+}
+
+#reader {
+  background: white;
+  padding: 10px;
+  border-radius: 18px;
+  box-shadow: 0 3px 12px rgba(0,0,0,.10);
+}
+
+.resultado {
+  background: white;
+  margin-top: 15px;
+  padding: 20px;
+  border-radius: 18px;
+  text-align: center;
+  box-shadow: 0 3px 12px rgba(0,0,0,.10);
+}
+
+.exito {
+  background: #dff6e5;
+  border: 2px solid #28a745;
+}
+
+.duplicado {
+  background: #fff3cd;
+  border: 2px solid #ffc107;
+}
+
+.error {
+  background: #f8d7da;
+  border: 2px solid #dc3545;
+}
+
+.icono {
+  font-size: 50px;
+}
+
+.nombre {
+  font-size: 26px;
+  font-weight: bold;
+  margin: 10px 0;
+}
+
+.id {
+  font-size: 18px;
+}
+
+.hora {
+  font-size: 18px;
+  margin-top: 10px;
+}
+
+button {
+  border: none;
+  padding: 14px 20px;
+  border-radius: 12px;
+  font-size: 17px;
+  cursor: pointer;
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div class="contenedor">
+
+  <div class="titulo">
+
+    <h1>📋 Pase de Lista</h1>
+
+    <p>Escanea el código QR del invitado</p>
+
+  </div>
+
+
+  <div id="reader"></div>
+
+
+  <div id="resultado"
+       class="resultado">
+
+    <div class="icono">📷</div>
+
+    <div>
+      Esperando código QR...
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+// =================================================
+// IMPORTANTE
+// PON AQUÍ TU URL DE APPS SCRIPT
+// =================================================
+
+const APPS_SCRIPT_URL =
+  'https://script.google.com/macros/s/AKfycbwnawq96p0uGO0uR9CN7UsU_JUCf2PhUtWcCSF6Mb2RVVnHVAfwJOKTPpZ0UqJmfTZ46w/exec';
+
+
+let procesando = false;
+
+
+// =================================================
+// CUANDO SE DETECTA UN QR
+// =================================================
+
+function qrEncontrado(texto) {
+
+  if (procesando) {
+    return;
+  }
+
+  procesando = true;
+
+
+  mostrarProcesando();
+
+
+  // -----------------------------------------------
+  // Obtener ID del QR
+  // -----------------------------------------------
+
+  const coincidencia =
+    texto.match(/ID\s*:\s*([^\s\r\n]+)/i);
+
+
+  if (!coincidencia) {
+
+    mostrarError(
+      'El QR no contiene un ID válido'
+    );
+
+    procesando = false;
+
+    return;
+  }
+
+
+  const id =
+    coincidencia[1].trim();
+
+
+  // -----------------------------------------------
+  // Enviar ID a Apps Script
+  // -----------------------------------------------
+
+  const url =
+    APPS_SCRIPT_URL +
+    '?id=' +
+    encodeURIComponent(id);
+
+
+  fetch(url)
+
+    .then(response => response.json())
+
+    .then(data => {
+
+      mostrarResultado(data);
+
+      procesando = false;
+
+      // Esperar antes de permitir
+      // otro escaneo
+
+      setTimeout(() => {
+
+        procesando = false;
+
+      }, 2000);
+
+    })
+
+    .catch(error => {
+
+      mostrarError(
+        'No se pudo conectar con el servidor'
+      );
+
+      procesando = false;
+
+    });
+
+}
+
+
+// =================================================
+// RESULTADO
+// =================================================
+
+function mostrarResultado(data) {
+
+  const caja =
+    document.getElementById('resultado');
+
+
+  if (data.ok) {
+
+    caja.className =
+      'resultado exito';
+
+
+    caja.innerHTML = `
+
+      <div class="icono">
+        ✅
+      </div>
+
+      <div>
+        ASISTENCIA REGISTRADA
+      </div>
+
+      <div class="nombre">
+        ${escapar(data.nombre)}
+      </div>
+
+      <div class="id">
+        ID: ${escapar(data.id)}
+      </div>
+
+      <div class="hora">
+        🕐 ${escapar(data.hora)}
+      </div>
+
+    `;
+
+    return;
+  }
+
+
+  if (data.tipo === 'DUPLICADO') {
+
+    caja.className =
+      'resultado duplicado';
+
+
+    caja.innerHTML = `
+
+      <div class="icono">
+        ⚠️
+      </div>
+
+      <div>
+        YA REGISTRADO
+      </div>
+
+      <div class="nombre">
+        ${escapar(data.nombre)}
+      </div>
+
+      <div class="id">
+        ID: ${escapar(data.id)}
+      </div>
+
+      <div class="hora">
+        Registro:
+        ${escapar(data.hora)}
+      </div>
+
+    `;
+
+    return;
+  }
+
+
+  caja.className =
+    'resultado error';
+
+
+  caja.innerHTML = `
+
+    <div class="icono">
+      ❌
+    </div>
+
+    <div>
+      ${escapar(data.mensaje)}
+    </div>
+
+    ${
+      data.id
+      ?
+      `<div class="id">
+         ID: ${escapar(data.id)}
+       </div>`
+      :
+      ''
+    }
+
+  `;
+
+}
+
+
+// =================================================
+// PROCESANDO
+// =================================================
+
+function mostrarProcesando() {
+
+  const caja =
+    document.getElementById('resultado');
+
+  caja.className =
+    'resultado';
+
+  caja.innerHTML = `
+
+    <div class="icono">
+      ⏳
+    </div>
+
+    <div>
+      Procesando asistencia...
+    </div>
+
+  `;
+
+}
+
+
+// =================================================
+// ERROR
+// =================================================
+
+function mostrarError(mensaje) {
+
+  const caja =
+    document.getElementById('resultado');
+
+  caja.className =
+    'resultado error';
+
+  caja.innerHTML = `
+
+    <div class="icono">
+      ❌
+    </div>
+
+    <div>
+      ${escapar(mensaje)}
+    </div>
+
+  `;
+
+}
+
+
+// =================================================
+// SEGURIDAD
+// =================================================
+
+function escapar(texto) {
+
+  if (
+    texto === null ||
+    texto === undefined
+  ) {
+    return '';
+  }
+
+  return String(texto)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+
+}
+
+
+// =================================================
+// INICIAR ESCÁNER
+// =================================================
+
+function iniciarScanner() {
+
+  const scanner =
+    new Html5QrcodeScanner(
+
+      'reader',
+
+      {
+        fps: 10,
+
+        qrbox: {
+          width: 250,
+          height: 250
+        },
+
+        rememberLastUsedCamera: true
+
+      },
+
+      false
+
+    );
+
+
+  scanner.render(
+    qrEncontrado,
+    function(error) {
+      // No mostrar errores
+      // mientras busca el QR
+    }
+  );
+
+}
+
+
+iniciarScanner();
+
+</script>
+
+</body>
+
+</html>
