@@ -6,105 +6,419 @@
 <meta charset="UTF-8">
 
 <meta name="viewport"
-      content="width=device-width, initial-scale=1">
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
 <title>Pase de Lista QR</title>
 
 <script src="https://unpkg.com/html5-qrcode"
-        type="text/javascript">
-</script>
+        type="text/javascript"></script>
 
 <style>
 
+/* ==================================================
+   CONFIGURACIÓN GENERAL
+   ================================================== */
+
 * {
-  box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100%;
 }
 
 body {
-  margin: 0;
-  padding: 20px;
-  font-family: Arial, sans-serif;
-  background: #f2f4f7;
+
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+
+    background: #f2f4f7;
+
+    color: #222;
+
+    overflow-x: hidden;
 }
+
+
+/* ==================================================
+   CONTENEDOR PRINCIPAL
+   ================================================== */
 
 .contenedor {
-  max-width: 550px;
-  margin: auto;
+
+    width: 100%;
+
+    max-width: 600px;
+
+    margin: 0 auto;
+
+    padding:
+        12px
+        max(12px, env(safe-area-inset-right))
+        20px
+        max(12px, env(safe-area-inset-left));
 }
 
+
+/* ==================================================
+   ENCABEZADO
+   ================================================== */
+
 .titulo {
-  background: white;
-  padding: 20px;
-  border-radius: 18px;
-  text-align: center;
-  margin-bottom: 15px;
-  box-shadow: 0 3px 12px rgba(0,0,0,.10);
+
+    width: 100%;
+
+    background: white;
+
+    padding: 16px;
+
+    border-radius: 18px;
+
+    text-align: center;
+
+    margin-bottom: 12px;
+
+    box-shadow:
+        0 3px 12px rgba(0,0,0,.10);
 }
 
 .titulo h1 {
-  margin: 0;
+
+    margin: 0;
+
+    font-size: clamp(24px, 7vw, 34px);
+
 }
 
 .titulo p {
-  color: #666;
+
+    margin: 8px 0 0;
+
+    font-size: clamp(14px, 4vw, 18px);
+
+    color: #666;
+
 }
+
+
+/* ==================================================
+   ESCÁNER
+   ================================================== */
 
 #reader {
-  background: white;
-  padding: 10px;
-  border-radius: 18px;
-  box-shadow: 0 3px 12px rgba(0,0,0,.10);
+
+    width: 100% !important;
+
+    max-width: 100% !important;
+
+    background: white;
+
+    padding: 8px;
+
+    border-radius: 18px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 3px 12px rgba(0,0,0,.10);
+
 }
+
+
+/* El video se adapta al celular */
+
+#reader video {
+
+    width: 100% !important;
+
+    max-width: 100% !important;
+
+    height: auto !important;
+
+    object-fit: cover;
+
+    border-radius: 12px;
+
+}
+
+
+/* Imagen del QR */
+
+#reader img {
+
+    max-width: 100%;
+
+}
+
+
+/* ==================================================
+   SELECTOR DE CÁMARA
+   ================================================== */
+
+#reader select {
+
+    width: 100%;
+
+    min-height: 48px;
+
+    margin-top: 8px;
+
+    padding: 10px;
+
+    font-size: 16px;
+
+    border-radius: 10px;
+
+    border: 1px solid #ccc;
+
+    background: white;
+
+}
+
+
+/* ==================================================
+   BOTONES
+   ================================================== */
+
+#reader button {
+
+    width: 100%;
+
+    min-height: 48px;
+
+    margin-top: 8px;
+
+    padding: 12px;
+
+    font-size: 17px;
+
+    font-weight: 600;
+
+    border-radius: 12px;
+
+    border: none;
+
+    cursor: pointer;
+
+}
+
+
+/* ==================================================
+   RESULTADO
+   ================================================== */
 
 .resultado {
-  background: white;
-  margin-top: 15px;
-  padding: 20px;
-  border-radius: 18px;
-  text-align: center;
-  box-shadow: 0 3px 12px rgba(0,0,0,.10);
+
+    width: 100%;
+
+    margin-top: 12px;
+
+    padding: 18px;
+
+    background: white;
+
+    border-radius: 18px;
+
+    text-align: center;
+
+    box-shadow:
+        0 3px 12px rgba(0,0,0,.10);
+
+    transition: .2s;
+
 }
 
-.exito {
-  background: #dff6e5;
-  border: 2px solid #28a745;
-}
-
-.duplicado {
-  background: #fff3cd;
-  border: 2px solid #ffc107;
-}
-
-.error {
-  background: #f8d7da;
-  border: 2px solid #dc3545;
-}
 
 .icono {
-  font-size: 50px;
+
+    font-size: clamp(38px, 12vw, 60px);
+
+    line-height: 1;
+
+    margin-bottom: 8px;
+
 }
+
 
 .nombre {
-  font-size: 26px;
-  font-weight: bold;
-  margin: 10px 0;
+
+    font-size: clamp(22px, 7vw, 30px);
+
+    font-weight: bold;
+
+    margin: 8px 0;
+
+    word-break: break-word;
+
 }
+
 
 .id {
-  font-size: 18px;
+
+    font-size: clamp(15px, 4vw, 19px);
+
 }
+
 
 .hora {
-  font-size: 18px;
-  margin-top: 10px;
+
+    font-size: clamp(15px, 4vw, 19px);
+
+    margin-top: 8px;
+
 }
 
-button {
-  border: none;
-  padding: 14px 20px;
-  border-radius: 12px;
-  font-size: 17px;
-  cursor: pointer;
+
+/* ==================================================
+   ESTADOS
+   ================================================== */
+
+.exito {
+
+    background: #dff6e5;
+
+    border: 2px solid #28a745;
+
+}
+
+
+.duplicado {
+
+    background: #fff3cd;
+
+    border: 2px solid #ffc107;
+
+}
+
+
+.error {
+
+    background: #f8d7da;
+
+    border: 2px solid #dc3545;
+
+}
+
+
+/* ==================================================
+   TABLETS
+   ================================================== */
+
+@media (min-width: 601px) {
+
+    .contenedor {
+
+        padding-top: 25px;
+
+    }
+
+    #reader {
+
+        padding: 12px;
+
+    }
+
+}
+
+
+/* ==================================================
+   CELULARES PEQUEÑOS
+   ================================================== */
+
+@media (max-width: 380px) {
+
+    .contenedor {
+
+        padding: 8px;
+
+    }
+
+    .titulo {
+
+        padding: 12px;
+
+        border-radius: 14px;
+
+    }
+
+    .resultado {
+
+        padding: 14px;
+
+        border-radius: 14px;
+
+    }
+
+}
+
+
+/* ==================================================
+   CELULAR EN HORIZONTAL
+   ================================================== */
+
+@media (orientation: landscape)
+and (max-height: 500px) {
+
+    .contenedor {
+
+        max-width: 900px;
+
+    }
+
+    .titulo {
+
+        padding: 10px;
+
+        margin-bottom: 8px;
+
+    }
+
+    .titulo h1 {
+
+        font-size: 24px;
+
+    }
+
+    .titulo p {
+
+        margin: 4px 0 0;
+
+    }
+
+    .resultado {
+
+        padding: 10px;
+
+    }
+
+}
+
+
+/* ==================================================
+   IPHONE CON NOTCH / SAFE AREA
+   ================================================== */
+
+@supports (padding: env(safe-area-inset-top)) {
+
+    .contenedor {
+
+        padding-top:
+            max(12px, env(safe-area-inset-top));
+
+        padding-bottom:
+            max(20px, env(safe-area-inset-bottom));
+
+    }
+
 }
 
 </style>
@@ -114,359 +428,500 @@ button {
 
 <body>
 
+
 <div class="contenedor">
 
-  <div class="titulo">
 
-    <h1>📋 Pase de Lista</h1>
+    <!-- ==========================================
+         ENCABEZADO
+         ========================================== -->
 
-    <p>Escanea el código QR del invitado</p>
+    <div class="titulo">
 
-  </div>
+        <h1>📋 Pase de Lista</h1>
 
+        <p>
+            Escanea el código QR del invitado
+        </p>
 
-  <div id="reader"></div>
-
-
-  <div id="resultado"
-       class="resultado">
-
-    <div class="icono">📷</div>
-
-    <div>
-      Esperando código QR...
     </div>
 
-  </div>
+
+    <!-- ==========================================
+         ESCÁNER
+         ========================================== -->
+
+    <div id="reader"></div>
+
+
+    <!-- ==========================================
+         RESULTADO
+         ========================================== -->
+
+    <div id="resultado"
+         class="resultado">
+
+        <div class="icono">
+            📷
+        </div>
+
+        <div>
+            Esperando código QR...
+        </div>
+
+    </div>
+
 
 </div>
 
 
 <script>
 
-// =================================================
-// IMPORTANTE
-// PON AQUÍ TU URL DE APPS SCRIPT
-// =================================================
+
+// ==================================================
+// URL DE GOOGLE APPS SCRIPT
+// ==================================================
 
 const APPS_SCRIPT_URL =
-  'https://script.google.com/macros/s/AKfycbwnawq96p0uGO0uR9CN7UsU_JUCf2PhUtWcCSF6Mb2RVVnHVAfwJOKTPpZ0UqJmfTZ46w/exec';
+    'https://script.google.com/macros/s/AKfycbwnawq96p0uGO0uR9CN7UsU_JUCf2PhUtWcCSF6Mb2RVVnHVAfwJOKTPpZ0UqJmfTZ46w/exec';
 
+
+// ==================================================
+// CONTROL PARA EVITAR DOBLE ESCANEO
+// ==================================================
 
 let procesando = false;
 
 
-// =================================================
-// CUANDO SE DETECTA UN QR
-// =================================================
+// ==================================================
+// QR DETECTADO
+// ==================================================
 
 function qrEncontrado(texto) {
 
-  if (procesando) {
-    return;
-  }
 
-  procesando = true;
+    if (procesando) {
 
+        return;
 
-  mostrarProcesando();
+    }
 
 
-  // -----------------------------------------------
-  // Obtener ID del QR
-  // -----------------------------------------------
-
-  const coincidencia =
-    texto.match(/ID\s*:\s*([^\s\r\n]+)/i);
+    procesando = true;
 
 
-  if (!coincidencia) {
-
-    mostrarError(
-      'El QR no contiene un ID válido'
-    );
-
-    procesando = false;
-
-    return;
-  }
+    mostrarProcesando();
 
 
-  const id =
-    coincidencia[1].trim();
+    // ----------------------------------------------
+    // BUSCAR ID EN EL QR
+    // ----------------------------------------------
+
+    const coincidencia =
+        texto.match(
+            /ID\s*:\s*([^\s\r\n]+)/i
+        );
 
 
-  // -----------------------------------------------
-  // Enviar ID a Apps Script
-  // -----------------------------------------------
+    if (!coincidencia) {
 
-  const url =
-    APPS_SCRIPT_URL +
-    '?id=' +
-    encodeURIComponent(id);
-
-
-  fetch(url)
-
-    .then(response => response.json())
-
-    .then(data => {
-
-      mostrarResultado(data);
-
-      procesando = false;
-
-      // Esperar antes de permitir
-      // otro escaneo
-
-      setTimeout(() => {
+        mostrarError(
+            'El QR no contiene un ID válido'
+        );
 
         procesando = false;
 
-      }, 2000);
+        return;
 
-    })
+    }
 
-    .catch(error => {
 
-      mostrarError(
-        'No se pudo conectar con el servidor'
-      );
+    const id =
+        coincidencia[1].trim();
 
-      procesando = false;
 
-    });
+    // ----------------------------------------------
+    // ENVIAR A APPS SCRIPT
+    // ----------------------------------------------
+
+    const url =
+        APPS_SCRIPT_URL +
+        '?id=' +
+        encodeURIComponent(id);
+
+
+    fetch(url)
+
+        .then(response => {
+
+            if (!response.ok) {
+
+                throw new Error(
+                    'Error HTTP'
+                );
+
+            }
+
+            return response.json();
+
+        })
+
+        .then(data => {
+
+            mostrarResultado(data);
+
+
+            setTimeout(() => {
+
+                procesando = false;
+
+            }, 1500);
+
+        })
+
+        .catch(error => {
+
+            console.error(error);
+
+
+            mostrarError(
+                'No se pudo conectar con el servidor'
+            );
+
+
+            procesando = false;
+
+        });
 
 }
 
 
-// =================================================
-// RESULTADO
-// =================================================
+// ==================================================
+// MOSTRAR RESULTADO
+// ==================================================
 
 function mostrarResultado(data) {
 
-  const caja =
-    document.getElementById('resultado');
+
+    const caja =
+        document.getElementById(
+            'resultado'
+        );
 
 
-  if (data.ok) {
-
-    caja.className =
-      'resultado exito';
+    if (data.ok) {
 
 
-    caja.innerHTML = `
-
-      <div class="icono">
-        ✅
-      </div>
-
-      <div>
-        ASISTENCIA REGISTRADA
-      </div>
-
-      <div class="nombre">
-        ${escapar(data.nombre)}
-      </div>
-
-      <div class="id">
-        ID: ${escapar(data.id)}
-      </div>
-
-      <div class="hora">
-        🕐 ${escapar(data.hora)}
-      </div>
-
-    `;
-
-    return;
-  }
+        caja.className =
+            'resultado exito';
 
 
-  if (data.tipo === 'DUPLICADO') {
+        caja.innerHTML = `
 
-    caja.className =
-      'resultado duplicado';
+            <div class="icono">
+                ✅
+            </div>
 
+            <div>
+                ASISTENCIA REGISTRADA
+            </div>
 
-    caja.innerHTML = `
+            <div class="nombre">
+                ${escapar(data.nombre)}
+            </div>
 
-      <div class="icono">
-        ⚠️
-      </div>
+            <div class="id">
+                ID: ${escapar(data.id)}
+            </div>
 
-      <div>
-        YA REGISTRADO
-      </div>
+            <div class="hora">
+                🕐 ${escapar(data.hora)}
+            </div>
 
-      <div class="nombre">
-        ${escapar(data.nombre)}
-      </div>
-
-      <div class="id">
-        ID: ${escapar(data.id)}
-      </div>
-
-      <div class="hora">
-        Registro:
-        ${escapar(data.hora)}
-      </div>
-
-    `;
-
-    return;
-  }
+        `;
 
 
-  caja.className =
-    'resultado error';
+        // Vibración en Android
+
+        if (
+            navigator.vibrate
+        ) {
+
+            navigator.vibrate(200);
+
+        }
 
 
-  caja.innerHTML = `
+        return;
 
-    <div class="icono">
-      ❌
-    </div>
-
-    <div>
-      ${escapar(data.mensaje)}
-    </div>
-
-    ${
-      data.id
-      ?
-      `<div class="id">
-         ID: ${escapar(data.id)}
-       </div>`
-      :
-      ''
     }
 
-  `;
+
+    if (
+        data.tipo ===
+        'DUPLICADO'
+    ) {
+
+
+        caja.className =
+            'resultado duplicado';
+
+
+        caja.innerHTML = `
+
+            <div class="icono">
+                ⚠️
+            </div>
+
+            <div>
+                YA REGISTRADO
+            </div>
+
+            <div class="nombre">
+                ${escapar(data.nombre)}
+            </div>
+
+            <div class="id">
+                ID: ${escapar(data.id)}
+            </div>
+
+            <div class="hora">
+                Registro:
+                ${escapar(data.hora)}
+            </div>
+
+        `;
+
+
+        if (
+            navigator.vibrate
+        ) {
+
+            navigator.vibrate(
+                [100, 100, 100]
+            );
+
+        }
+
+
+        return;
+
+    }
+
+
+    caja.className =
+        'resultado error';
+
+
+    caja.innerHTML = `
+
+        <div class="icono">
+            ❌
+        </div>
+
+        <div>
+            ${escapar(data.mensaje)}
+        </div>
+
+        ${
+            data.id
+            ?
+            `
+            <div class="id">
+                ID:
+                ${escapar(data.id)}
+            </div>
+            `
+            :
+            ''
+        }
+
+    `;
 
 }
 
 
-// =================================================
+// ==================================================
 // PROCESANDO
-// =================================================
+// ==================================================
 
 function mostrarProcesando() {
 
-  const caja =
-    document.getElementById('resultado');
 
-  caja.className =
-    'resultado';
+    const caja =
+        document.getElementById(
+            'resultado'
+        );
 
-  caja.innerHTML = `
 
-    <div class="icono">
-      ⏳
-    </div>
+    caja.className =
+        'resultado';
 
-    <div>
-      Procesando asistencia...
-    </div>
 
-  `;
+    caja.innerHTML = `
+
+        <div class="icono">
+            ⏳
+        </div>
+
+        <div>
+            Registrando asistencia...
+        </div>
+
+    `;
 
 }
 
 
-// =================================================
+// ==================================================
 // ERROR
-// =================================================
+// ==================================================
 
 function mostrarError(mensaje) {
 
-  const caja =
-    document.getElementById('resultado');
 
-  caja.className =
-    'resultado error';
+    const caja =
+        document.getElementById(
+            'resultado'
+        );
 
-  caja.innerHTML = `
 
-    <div class="icono">
-      ❌
-    </div>
+    caja.className =
+        'resultado error';
 
-    <div>
-      ${escapar(mensaje)}
-    </div>
 
-  `;
+    caja.innerHTML = `
+
+        <div class="icono">
+            ❌
+        </div>
+
+        <div>
+            ${escapar(mensaje)}
+        </div>
+
+    `;
 
 }
 
 
-// =================================================
-// SEGURIDAD
-// =================================================
+// ==================================================
+// PROTECCIÓN HTML
+// ==================================================
 
 function escapar(texto) {
 
-  if (
-    texto === null ||
-    texto === undefined
-  ) {
-    return '';
-  }
 
-  return String(texto)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
+    if (
+        texto === null ||
+        texto === undefined
+    ) {
+
+        return '';
+
+    }
+
+
+    return String(texto)
+
+        .replace(
+            /&/g,
+            '&amp;'
+        )
+
+        .replace(
+            /</g,
+            '&lt;'
+        )
+
+        .replace(
+            />/g,
+            '&gt;'
+        )
+
+        .replace(
+            /"/g,
+            '&quot;'
+        )
+
+        .replace(
+            /'/g,
+            '&#039;'
+        );
 
 }
 
 
-// =================================================
+// ==================================================
 // INICIAR ESCÁNER
-// =================================================
+// ==================================================
 
 function iniciarScanner() {
 
-  const scanner =
-    new Html5QrcodeScanner(
 
-      'reader',
+    const scanner =
+        new Html5QrcodeScanner(
 
-      {
-        fps: 10,
+            'reader',
 
-        qrbox: {
-          width: 250,
-          height: 250
-        },
+            {
 
-        rememberLastUsedCamera: true
+                fps: 10,
 
-      },
+                qrbox: function(
+                    viewfinderWidth,
+                    viewfinderHeight
+                ) {
 
-      false
+                    const size =
+                        Math.min(
+                            viewfinderWidth,
+                            viewfinderHeight
+                        ) * 0.70;
+
+                    return {
+                        width: Math.floor(size),
+                        height: Math.floor(size)
+                    };
+
+                },
+
+                rememberLastUsedCamera: true,
+
+                aspectRatio: 1.0
+
+            },
+
+            false
+
+        );
+
+
+    scanner.render(
+
+        qrEncontrado,
+
+        function(error) {
+
+            // No mostramos los errores
+            // normales mientras busca QR
+
+        }
 
     );
-
-
-  scanner.render(
-    qrEncontrado,
-    function(error) {
-      // No mostrar errores
-      // mientras busca el QR
-    }
-  );
 
 }
 
 
+// ==================================================
+// INICIAR
+// ==================================================
+
 iniciarScanner();
 
+
 </script>
+
 
 </body>
 
