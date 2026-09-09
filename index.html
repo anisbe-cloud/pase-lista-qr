@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="es">
 
@@ -66,6 +67,7 @@ body {
         max(12px, env(safe-area-inset-right))
         20px
         max(12px, env(safe-area-inset-left));
+
 }
 
 
@@ -89,6 +91,7 @@ body {
 
     box-shadow:
         0 3px 12px rgba(0,0,0,.10);
+
 }
 
 .titulo h1 {
@@ -106,6 +109,58 @@ body {
     font-size: clamp(14px, 4vw, 18px);
 
     color: #666;
+
+}
+
+
+/* ==================================================
+   SELECTOR DE TALLER
+   ================================================== */
+
+.selector-taller {
+
+    width: 100%;
+
+    background: white;
+
+    padding: 16px;
+
+    border-radius: 18px;
+
+    margin-bottom: 12px;
+
+    box-shadow:
+        0 3px 12px rgba(0,0,0,.10);
+
+}
+
+.selector-taller label {
+
+    display: block;
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    margin-bottom: 8px;
+
+}
+
+.selector-taller select {
+
+    width: 100%;
+
+    min-height: 48px;
+
+    padding: 10px;
+
+    font-size: 16px;
+
+    border-radius: 10px;
+
+    border: 1px solid #ccc;
+
+    background: white;
 
 }
 
@@ -350,6 +405,14 @@ body {
 
     }
 
+    .selector-taller {
+
+        padding: 12px;
+
+        border-radius: 14px;
+
+    }
+
     .resultado {
 
         padding: 14px;
@@ -448,6 +511,39 @@ and (max-height: 500px) {
 
 
     <!-- ==========================================
+         SELECTOR DE TALLER
+         ========================================== -->
+
+    <div class="selector-taller">
+
+        <label for="taller">
+            Selecciona el taller:
+        </label>
+
+        <select id="taller">
+
+            <option value="">
+                -- Selecciona un taller --
+            </option>
+
+            <option value="Taller 1">
+                Taller 1
+            </option>
+
+            <option value="Taller 2">
+                Taller 2
+            </option>
+
+            <option value="Taller 3">
+                Taller 3
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <!-- ==========================================
          ESCÁNER
          ========================================== -->
 
@@ -466,7 +562,7 @@ and (max-height: 500px) {
         </div>
 
         <div>
-            Esperando código QR...
+            Selecciona un taller y escanea el código QR...
         </div>
 
     </div>
@@ -507,6 +603,25 @@ function qrEncontrado(texto) {
     }
 
 
+    // ----------------------------------------------
+    // OBTENER TALLER SELECCIONADO
+    // ----------------------------------------------
+
+    const taller =
+        document.getElementById('taller').value;
+
+
+    if (!taller) {
+
+        mostrarError(
+            'Primero selecciona un taller'
+        );
+
+        return;
+
+    }
+
+
     procesando = true;
 
 
@@ -541,13 +656,15 @@ function qrEncontrado(texto) {
 
 
     // ----------------------------------------------
-    // ENVIAR A APPS SCRIPT
+    // ENVIAR ID + TALLER A APPS SCRIPT
     // ----------------------------------------------
 
     const url =
         APPS_SCRIPT_URL +
         '?id=' +
-        encodeURIComponent(id);
+        encodeURIComponent(id) +
+        '&taller=' +
+        encodeURIComponent(taller);
 
 
     fetch(url)
@@ -880,8 +997,11 @@ function iniciarScanner() {
                         ) * 0.70;
 
                     return {
+
                         width: Math.floor(size),
+
                         height: Math.floor(size)
+
                     };
 
                 },
@@ -926,3 +1046,4 @@ iniciarScanner();
 </body>
 
 </html>
+```
