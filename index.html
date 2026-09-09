@@ -1,1047 +1,743 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-<title>Pase de Lista QR</title>
-
-<script src="https://unpkg.com/html5-qrcode"
-        type="text/javascript"></script>
-
-<style>
-
-/* ==================================================
-   CONFIGURACIÓN GENERAL
-   ================================================== */
-
-* {
-    box-sizing: border-box;
-}
-
-html,
-body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    min-height: 100%;
-}
-
-body {
-
-    font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Roboto,
-        Arial,
-        sans-serif;
-
-    background: #f2f4f7;
-
-    color: #222;
-
-    overflow-x: hidden;
-}
-
-
-/* ==================================================
-   CONTENEDOR PRINCIPAL
-   ================================================== */
-
-.contenedor {
-
-    width: 100%;
-
-    max-width: 600px;
-
-    margin: 0 auto;
-
-    padding:
-        12px
-        max(12px, env(safe-area-inset-right))
-        20px
-        max(12px, env(safe-area-inset-left));
-
-}
-
-
-/* ==================================================
-   ENCABEZADO
-   ================================================== */
-
-.titulo {
-
-    width: 100%;
-
-    background: white;
-
-    padding: 16px;
-
-    border-radius: 18px;
-
-    text-align: center;
-
-    margin-bottom: 12px;
-
-    box-shadow:
-        0 3px 12px rgba(0,0,0,.10);
-
-}
-
-.titulo h1 {
-
-    margin: 0;
-
-    font-size: clamp(15px, 7vw, 25px);
-
-}
-
-.titulo p {
-
-    margin: 8px 0 0;
-
-    font-size: clamp(14px, 4vw, 18px);
-
-    color: #666;
-
-}
-
-
-/* ==================================================
-   SELECTOR DE TALLER
-   ================================================== */
-
-.selector-taller {
-
-    width: 100%;
-
-    background: white;
-
-    padding: 16px;
-
-    border-radius: 18px;
-
-    margin-bottom: 12px;
-
-    box-shadow:
-        0 3px 12px rgba(0,0,0,.10);
-
-}
-
-.selector-taller label {
-
-    display: block;
-
-    font-size: 16px;
-
-    font-weight: 600;
-
-    margin-bottom: 8px;
-
-}
-
-.selector-taller select {
-
-    width: 100%;
-
-    min-height: 48px;
-
-    padding: 10px;
-
-    font-size: 16px;
-
-    border-radius: 10px;
-
-    border: 1px solid #ccc;
-
-    background: white;
-
-}
-
-
-/* ==================================================
-   ESCÁNER
-   ================================================== */
-
-#reader {
-
-    width: 100% !important;
-
-    max-width: 100% !important;
-
-    background: white;
-
-    padding: 8px;
-
-    border-radius: 18px;
-
-    overflow: hidden;
-
-    box-shadow:
-        0 3px 12px rgba(0,0,0,.10);
-
-}
-
-
-/* El video se adapta al celular */
-
-#reader video {
-
-    width: 100% !important;
-
-    max-width: 100% !important;
-
-    height: auto !important;
-
-    object-fit: cover;
-
-    border-radius: 12px;
-
-}
-
-
-/* Imagen del QR */
-
-#reader img {
-
-    max-width: 100%;
-
-}
-
-
-/* ==================================================
-   SELECTOR DE CÁMARA
-   ================================================== */
-
-#reader select {
-
-    width: 100%;
-
-    min-height: 48px;
-
-    margin-top: 8px;
-
-    padding: 10px;
-
-    font-size: 16px;
-
-    border-radius: 10px;
-
-    border: 1px solid #ccc;
-
-    background: white;
-
-}
-
-
-/* ==================================================
-   BOTONES
-   ================================================== */
-
-#reader button {
-
-    width: 100%;
-
-    min-height: 48px;
-
-    margin-top: 8px;
-
-    padding: 12px;
-
-    font-size: 17px;
-
-    font-weight: 600;
-
-    border-radius: 12px;
-
-    border: none;
-
-    cursor: pointer;
-
-}
-
-
-/* ==================================================
-   RESULTADO
-   ================================================== */
-
-.resultado {
-
-    width: 100%;
-
-    margin-top: 12px;
-
-    padding: 18px;
-
-    background: white;
-
-    border-radius: 18px;
-
-    text-align: center;
-
-    box-shadow:
-        0 3px 12px rgba(0,0,0,.10);
-
-    transition: .2s;
-
-}
-
-
-.icono {
-
-    font-size: clamp(38px, 12vw, 60px);
-
-    line-height: 1;
-
-    margin-bottom: 8px;
-
-}
-
-
-.nombre {
-
-    font-size: clamp(22px, 7vw, 30px);
-
-    font-weight: bold;
-
-    margin: 8px 0;
-
-    word-break: break-word;
-
-}
-
-
-.id {
-
-    font-size: clamp(15px, 4vw, 19px);
-
-}
-
-
-.hora {
-
-    font-size: clamp(15px, 4vw, 19px);
-
-    margin-top: 8px;
-
-}
-
-
-/* ==================================================
-   ESTADOS
-   ================================================== */
-
-.exito {
-
-    background: #dff6e5;
-
-    border: 2px solid #28a745;
-
-}
-
-
-.duplicado {
-
-    background: #fff3cd;
-
-    border: 2px solid #ffc107;
-
-}
-
-
-.error {
-
-    background: #f8d7da;
-
-    border: 2px solid #dc3545;
-
-}
-
-
-/* ==================================================
-   TABLETS
-   ================================================== */
-
-@media (min-width: 601px) {
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Pase de lista</title>
+
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      background: #f3f4f6;
+      color: #222;
+      font-family: Arial, sans-serif;
+    }
 
     .contenedor {
+      width: 100%;
+      max-width: 650px;
+      margin: auto;
+      background: white;
+      padding: 22px;
+      border-radius: 16px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.10);
+    }
 
-        padding-top: 25px;
+    h1 {
+      margin-top: 0;
+      margin-bottom: 8px;
+      text-align: center;
+      color: #6b1f5b;
+      font-size: 27px;
+    }
 
+    .subtitulo {
+      margin-top: 0;
+      margin-bottom: 22px;
+      text-align: center;
+      color: #666;
+      font-size: 15px;
+    }
+
+    label {
+      display: block;
+      margin-top: 16px;
+      margin-bottom: 7px;
+      font-weight: bold;
+      color: #444;
+    }
+
+    select,
+    button {
+      width: 100%;
+      min-height: 46px;
+      padding: 10px 12px;
+      border: 1px solid #cfcfcf;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+
+    select {
+      background: white;
+    }
+
+    button {
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .btn-iniciar {
+      margin-top: 20px;
+      background: #6b1f5b;
+      color: white;
+    }
+
+    .btn-iniciar:hover {
+      background: #511744;
+    }
+
+    .btn-detener {
+      margin-top: 12px;
+      background: #777;
+      color: white;
+      display: none;
     }
 
     #reader {
-
-        padding: 12px;
-
+      width: 100%;
+      max-width: 420px;
+      margin: 22px auto 0;
+      display: none;
+      overflow: hidden;
+      border-radius: 12px;
     }
 
-}
-
-
-/* ==================================================
-   CELULARES PEQUEÑOS
-   ================================================== */
-
-@media (max-width: 380px) {
-
-    .contenedor {
-
-        padding: 8px;
-
+    .instrucciones {
+      display: none;
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 8px;
+      background: #f1e8f0;
+      color: #6b1f5b;
+      text-align: center;
+      font-size: 14px;
     }
 
-    .titulo {
-
-        padding: 12px;
-
-        border-radius: 14px;
-
+    #resultado {
+      display: none;
+      margin-top: 20px;
+      padding: 16px;
+      border-radius: 10px;
+      font-size: 15px;
+      line-height: 1.5;
     }
 
-    .selector-taller {
-
-        padding: 12px;
-
-        border-radius: 14px;
-
+    #resultado.exito {
+      display: block;
+      background: #e4f7e9;
+      border: 1px solid #8bd19a;
+      color: #176b2b;
     }
 
-    .resultado {
-
-        padding: 14px;
-
-        border-radius: 14px;
-
+    #resultado.error {
+      display: block;
+      background: #fde8e8;
+      border: 1px solid #e5a1a1;
+      color: #9a1c1c;
     }
 
-}
-
-
-/* ==================================================
-   CELULAR EN HORIZONTAL
-   ================================================== */
-
-@media (orientation: landscape)
-and (max-height: 500px) {
-
-    .contenedor {
-
-        max-width: 900px;
-
+    #resultado.aviso {
+      display: block;
+      background: #fff5d9;
+      border: 1px solid #e5c36a;
+      color: #765500;
     }
 
-    .titulo {
+    .dato {
+      margin: 5px 0;
+    }
 
+    .dato strong {
+      font-weight: bold;
+    }
+
+    .cargando {
+      text-align: center;
+      color: #666;
+      margin-top: 15px;
+      display: none;
+    }
+
+    .seleccion {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 8px;
+      background: #f7f7f7;
+      font-size: 14px;
+      color: #555;
+    }
+
+    @media (max-width: 600px) {
+      body {
         padding: 10px;
+      }
 
-        margin-bottom: 8px;
+      .contenedor {
+        padding: 17px;
+        border-radius: 12px;
+      }
 
+      h1 {
+        font-size: 23px;
+      }
+
+      select,
+      button {
+        font-size: 14px;
+      }
+
+      #reader {
+        max-width: 310px;
+      }
     }
-
-    .titulo h1 {
-
-        font-size: 24px;
-
-    }
-
-    .titulo p {
-
-        margin: 4px 0 0;
-
-    }
-
-    .resultado {
-
-        padding: 10px;
-
-    }
-
-}
-
-
-/* ==================================================
-   IPHONE CON NOTCH / SAFE AREA
-   ================================================== */
-
-@supports (padding: env(safe-area-inset-top)) {
-
-    .contenedor {
-
-        padding-top:
-            max(12px, env(safe-area-inset-top));
-
-        padding-bottom:
-            max(20px, env(safe-area-inset-bottom));
-
-    }
-
-}
-
-</style>
-
+  </style>
 </head>
-
 
 <body>
 
+  <div class="contenedor">
 
-<div class="contenedor">
+    <h1>Pase de lista</h1>
 
+    <p class="subtitulo">
+      Selecciona el día y la actividad antes de escanear el código QR.
+    </p>
 
-    <!-- ==========================================
-         ENCABEZADO
-         ========================================== -->
+    <label for="dia">Día de la actividad</label>
 
-    <div class="titulo">
+    <select id="dia" onchange="cargarActividades()">
+      <option value="">Selecciona un día</option>
+      <option value="Día 1 · 28 de septiembre">
+        Día 1 · 28 de septiembre
+      </option>
+      <option value="Día 2 · 29 de septiembre">
+        Día 2 · 29 de septiembre
+      </option>
+    </select>
 
-        <h1>📋 Pase de Lista</h1>
+    <label for="actividad">Actividad</label>
 
-        <p>
-            Escanea el código QR del invitado
-        </p>
+    <select id="actividad" disabled>
+      <option value="">Primero selecciona un día</option>
+    </select>
 
+    <div id="seleccion" class="seleccion" style="display:none;"></div>
+
+    <button
+      id="btnIniciar"
+      class="btn-iniciar"
+      onclick="iniciarEscaner()">
+      Iniciar escáner
+    </button>
+
+    <button
+      id="btnDetener"
+      class="btn-detener"
+      onclick="detenerEscaner()">
+      Detener escáner
+    </button>
+
+    <div id="instrucciones" class="instrucciones">
+      Coloca el código QR dentro del recuadro.
     </div>
-
-
-    <!-- ==========================================
-         SELECTOR DE TALLER
-         ========================================== -->
-
-    <div class="selector-taller">
-
-        <label for="taller">
-            Selecciona el taller:
-        </label>
-
-        <select id="taller">
-
-            <option value="">
-                -- Selecciona un taller --
-            </option>
-
-            <option value="Taller 1">
-                Taller 1
-            </option>
-
-            <option value="Taller 2">
-                Taller 2
-            </option>
-
-            <option value="Taller 3">
-                Taller 3
-            </option>
-
-        </select>
-
-    </div>
-
-
-    <!-- ==========================================
-         ESCÁNER
-         ========================================== -->
 
     <div id="reader"></div>
 
-
-    <!-- ==========================================
-         RESULTADO
-         ========================================== -->
-
-    <div id="resultado"
-         class="resultado">
-
-        <div class="icono">
-            📷
-        </div>
-
-        <div>
-            Selecciona un taller y escanea el código QR...
-        </div>
-
+    <div id="cargando" class="cargando">
+      Registrando asistencia...
     </div>
 
+    <div id="resultado"></div>
 
-</div>
+  </div>
 
-
-<script>
-
-
-// ==================================================
-// URL DE GOOGLE APPS SCRIPT
-// ==================================================
-
-const APPS_SCRIPT_URL =
-    'https://script.google.com/macros/s/AKfycbxST6tPkm9fQX0czbTWW4Qpu3UOsqOm3pink7L-hye9ySByrvIRxjPtwMGcHCpzO6kzWw/exec';
+  <script>
+    /*
+     * Reemplaza esta URL por la URL de tu aplicación web de Apps Script.
+     */
+    const APPS_SCRIPT_URL =
+      'https://script.google.com/macros/s/AKfycbwnawq96p0uGO0uR9CN7UsU_JUCf2PhUtWcCSF6Mb2RVVnHVAfwJOKTPpZ0UqJmfTZ46w/exec';
 
 
-// ==================================================
-// CONTROL PARA EVITAR DOBLE ESCANEO
-// ==================================================
+    /*
+     * Actividades reales del congreso.
+     */
+    const actividades = {
 
-let procesando = false;
+      'Día 1 · 28 de septiembre': [
+        '09:30 Ponencia Magistral: Trauma, cuidados colectivos y reparación feminista frente a las violencias sexuales. Creer y cuidar a quien sostiene la vida',
+
+        '11:30 Taller 1: Recursos feministas para afrontar las violencias sexuales contra niñeces y adolescencias.',
+
+        '11:30 Taller 2: Recursos legales para profesionales. Herramientas desde el territorio. Experiencias de México y Argentina.',
+
+        '11:30 Panel sobre violencias sexuales digitales y desafíos en entornos digitales'
+      ],
+
+      'Día 2 · 29 de septiembre': [
+        '09:15 Conferencia Magistral: Modelos de caridad vs modelos de justicia social: tensiones en el manejo de financiamiento en organizaciones sin fines de lucro.',
+
+        '11:30 Conferencia interactiva: Recursos legales feministas en procesos de violencias sexuales para personas cuidadoras.',
+
+        '11:30 Taller: Educación integral de las sexualidades como factor de protección.',
+
+        '13:30 Ponencia Magistral de Cierre: Resistir y reinventarse: desafíos actuales y futuros de la cooperación internacional en América Latina y el Caribe.'
+      ]
+
+    };
 
 
-// ==================================================
-// QR DETECTADO
-// ==================================================
-
-function qrEncontrado(texto) {
+    let html5QrCode = null;
+    let escaneando = false;
+    let procesando = false;
 
 
-    if (procesando) {
+    /*
+     * Cargar actividades según el día seleccionado.
+     */
+    function cargarActividades() {
+
+      const dia =
+        document.getElementById('dia').value;
+
+      const selectActividad =
+        document.getElementById('actividad');
+
+      const seleccion =
+        document.getElementById('seleccion');
+
+      selectActividad.innerHTML = '';
+
+      seleccion.style.display = 'none';
+
+      if (!dia) {
+
+        selectActividad.disabled = true;
+
+        const opcion =
+          document.createElement('option');
+
+        opcion.value = '';
+        opcion.textContent =
+          'Primero selecciona un día';
+
+        selectActividad.appendChild(opcion);
 
         return;
+      }
 
+      selectActividad.disabled = false;
+
+      const opcionInicial =
+        document.createElement('option');
+
+      opcionInicial.value = '';
+      opcionInicial.textContent =
+        'Selecciona una actividad';
+
+      selectActividad.appendChild(opcionInicial);
+
+      actividades[dia].forEach(function(actividad) {
+
+        const opcion =
+          document.createElement('option');
+
+        opcion.value = actividad;
+        opcion.textContent = actividad;
+
+        selectActividad.appendChild(opcion);
+
+      });
+
+      selectActividad.onchange = mostrarSeleccion;
     }
 
 
-    // ----------------------------------------------
-    // OBTENER TALLER SELECCIONADO
-    // ----------------------------------------------
+    /*
+     * Mostrar la selección actual.
+     */
+    function mostrarSeleccion() {
 
-    const taller =
-        document.getElementById('taller').value;
+      const dia =
+        document.getElementById('dia').value;
 
+      const actividad =
+        document.getElementById('actividad').value;
 
-    if (!taller) {
+      const seleccion =
+        document.getElementById('seleccion');
 
-        mostrarError(
-            'Primero selecciona un taller'
-        );
+      if (!dia || !actividad) {
+
+        seleccion.style.display = 'none';
 
         return;
+      }
 
+      seleccion.innerHTML =
+        '<strong>Día:</strong> ' +
+        escaparHTML(dia) +
+        '<br><strong>Actividad:</strong> ' +
+        escaparHTML(actividad);
+
+      seleccion.style.display = 'block';
     }
 
 
-    procesando = true;
+    /*
+     * Iniciar escáner.
+     */
+    async function iniciarEscaner() {
 
+      const dia =
+        document.getElementById('dia').value;
 
-    mostrarProcesando();
+      const actividad =
+        document.getElementById('actividad').value;
 
+      if (!dia) {
+        mostrarResultado(
+          'Selecciona el día de la actividad.',
+          'aviso'
+        );
+        return;
+      }
 
-    // ----------------------------------------------
-    // BUSCAR ID EN EL QR
-    // ----------------------------------------------
+      if (!actividad) {
+        mostrarResultado(
+          'Selecciona la actividad antes de iniciar el escáner.',
+          'aviso'
+        );
+        return;
+      }
 
-    const coincidencia =
-        texto.match(
-            /ID\s*:\s*([^\s\r\n]+)/i
+      if (escaneando) {
+        return;
+      }
+
+      document.getElementById('reader').style.display = 'block';
+
+      document.getElementById('instrucciones').style.display =
+        'block';
+
+      document.getElementById('btnIniciar').style.display =
+        'none';
+
+      document.getElementById('btnDetener').style.display =
+        'block';
+
+      limpiarResultado();
+
+      html5QrCode =
+        new Html5Qrcode('reader');
+
+      escaneando = true;
+
+      try {
+
+        await html5QrCode.start(
+          {
+            facingMode: 'environment'
+          },
+          {
+            fps: 10,
+            qrbox: {
+              width: 230,
+              height: 230
+            },
+            aspectRatio: 1.0
+          },
+          qrEncontrado,
+          function(errorMessage) {
+            // No mostrar errores momentáneos de lectura.
+          }
         );
 
+      } catch (error) {
 
-    if (!coincidencia) {
+        escaneando = false;
 
-        mostrarError(
-            'El QR no contiene un ID válido'
+        document.getElementById('reader').style.display =
+          'none';
+
+        document.getElementById('instrucciones').style.display =
+          'none';
+
+        document.getElementById('btnIniciar').style.display =
+          'block';
+
+        document.getElementById('btnDetener').style.display =
+          'none';
+
+        mostrarResultado(
+          'No fue posible abrir la cámara. Verifica los permisos del navegador.',
+          'error'
+        );
+
+        console.error(error);
+      }
+    }
+
+
+    /*
+     * Detener escáner.
+     */
+    async function detenerEscaner() {
+
+      if (html5QrCode && escaneando) {
+
+        try {
+          await html5QrCode.stop();
+        } catch (error) {
+          console.error(error);
+        }
+
+      }
+
+      escaneando = false;
+
+      document.getElementById('reader').style.display =
+        'none';
+
+      document.getElementById('instrucciones').style.display =
+        'none';
+
+      document.getElementById('btnIniciar').style.display =
+        'block';
+
+      document.getElementById('btnDetener').style.display =
+        'none';
+    }
+
+
+    /*
+     * Se ejecuta cuando se detecta un código QR.
+     */
+    async function qrEncontrado(texto) {
+
+      if (procesando) {
+        return;
+      }
+
+      procesando = true;
+
+      const id = extraerID(texto);
+
+      if (!id) {
+
+        mostrarResultado(
+          'El código QR no contiene un folio válido.',
+          'error'
         );
 
         procesando = false;
 
         return;
+      }
 
+      const dia =
+        document.getElementById('dia').value;
+
+      const actividad =
+        document.getElementById('actividad').value;
+
+      await detenerEscaner();
+
+      registrarAsistencia(id, dia, actividad);
     }
 
 
-    const id =
-        coincidencia[1].trim();
+    /*
+     * Extraer el folio del QR.
+     *
+     * Acepta:
+     * ID: YTC-004
+     * id=YTC-004
+     * YTC-004
+     */
+    function extraerID(texto) {
 
+      const contenido =
+        String(texto || '').trim();
 
-    // ----------------------------------------------
-    // ENVIAR ID + TALLER A APPS SCRIPT
-    // ----------------------------------------------
-
-    const url =
-        APPS_SCRIPT_URL +
-        '?id=' +
-        encodeURIComponent(id) +
-        '&taller=' +
-        encodeURIComponent(taller);
-
-
-    fetch(url)
-
-        .then(response => {
-
-            if (!response.ok) {
-
-                throw new Error(
-                    'Error HTTP'
-                );
-
-            }
-
-            return response.json();
-
-        })
-
-        .then(data => {
-
-            mostrarResultado(data);
-
-
-            setTimeout(() => {
-
-                procesando = false;
-
-            }, 1500);
-
-        })
-
-        .catch(error => {
-
-            console.error(error);
-
-
-            mostrarError(
-                'No se pudo conectar con el servidor'
-            );
-
-
-            procesando = false;
-
-        });
-
-}
-
-
-// ==================================================
-// MOSTRAR RESULTADO
-// ==================================================
-
-function mostrarResultado(data) {
-
-
-    const caja =
-        document.getElementById(
-            'resultado'
+      let coincidencia =
+        contenido.match(
+          /ID\s*:\s*([A-Za-z0-9_-]+)/i
         );
 
+      if (coincidencia) {
+        return coincidencia[1].trim();
+      }
 
-    if (data.ok) {
+      coincidencia =
+        contenido.match(
+          /id\s*=\s*([A-Za-z0-9_-]+)/i
+        );
 
+      if (coincidencia) {
+        return coincidencia[1].trim();
+      }
 
-        caja.className =
-            'resultado exito';
+      if (
+        /^[A-Za-z0-9_-]+$/.test(contenido)
+      ) {
+        return contenido;
+      }
 
-
-        caja.innerHTML = `
-
-            <div class="icono">
-                ✅
-            </div>
-
-            <div>
-                ASISTENCIA REGISTRADA
-            </div>
-
-            <div class="nombre">
-                ${escapar(data.nombre)}
-            </div>
-
-            <div class="id">
-                ID: ${escapar(data.id)}
-            </div>
-
-            <div class="hora">
-                🕐 ${escapar(data.hora)}
-            </div>
-
-        `;
-
-
-        // Vibración en Android
-
-        if (
-            navigator.vibrate
-        ) {
-
-            navigator.vibrate(200);
-
-        }
-
-
-        return;
-
+      return '';
     }
 
 
-    if (
-        data.tipo ===
-        'DUPLICADO'
+    /*
+     * Enviar asistencia al Apps Script.
+     */
+    async function registrarAsistencia(
+      id,
+      dia,
+      actividad
     ) {
 
+      const cargando =
+        document.getElementById('cargando');
 
-        caja.className =
-            'resultado duplicado';
+      cargando.style.display = 'block';
 
+      try {
 
-        caja.innerHTML = `
+        const url =
+          APPS_SCRIPT_URL +
+          '?id=' + encodeURIComponent(id) +
+          '&dia=' + encodeURIComponent(dia) +
+          '&actividad=' + encodeURIComponent(actividad);
 
-            <div class="icono">
-                ⚠️
-            </div>
+        const respuesta =
+          await fetch(url);
 
-            <div>
-                YA REGISTRADO
-            </div>
+        const datos =
+          await respuesta.json();
 
-            <div class="nombre">
-                ${escapar(data.nombre)}
-            </div>
+        cargando.style.display = 'none';
 
-            <div class="id">
-                ID: ${escapar(data.id)}
-            </div>
+        if (datos.ok) {
 
-            <div class="hora">
-                Registro:
-                ${escapar(data.hora)}
-            </div>
+          mostrarResultado(
+            '<div class="dato"><strong>Asistencia registrada</strong></div>' +
+            '<div class="dato"><strong>Folio:</strong> ' +
+            escaparHTML(datos.id) +
+            '</div>' +
+            '<div class="dato"><strong>Nombre:</strong> ' +
+            escaparHTML(datos.nombre) +
+            '</div>' +
+            '<div class="dato"><strong>Día:</strong> ' +
+            escaparHTML(datos.dia) +
+            '</div>' +
+            '<div class="dato"><strong>Actividad:</strong> ' +
+            escaparHTML(datos.actividad) +
+            '</div>' +
+            '<div class="dato"><strong>Hora:</strong> ' +
+            escaparHTML(datos.hora) +
+            '</div>',
+            'exito'
+          );
 
-        `;
+        } else if (datos.tipo === 'DUPLICADO') {
 
+          mostrarResultado(
+            '<div class="dato"><strong>Asistencia duplicada</strong></div>' +
+            '<div class="dato">' +
+            escaparHTML(datos.mensaje) +
+            '</div>' +
+            '<div class="dato"><strong>Nombre:</strong> ' +
+            escaparHTML(datos.nombre || '') +
+            '</div>' +
+            '<div class="dato"><strong>Actividad:</strong> ' +
+            escaparHTML(datos.actividad || '') +
+            '</div>',
+            'aviso'
+          );
 
-        if (
-            navigator.vibrate
-        ) {
+        } else {
 
-            navigator.vibrate(
-                [100, 100, 100]
-            );
+          mostrarResultado(
+            '<div class="dato"><strong>No se registró la asistencia</strong></div>' +
+            '<div class="dato">' +
+            escaparHTML(datos.mensaje || 'Ocurrió un error') +
+            '</div>' +
+            '<div class="dato"><strong>Nombre:</strong> ' +
+            escaparHTML(datos.nombre || '') +
+            '</div>',
+            'error'
+          );
 
         }
 
+      } catch (error) {
 
-        return;
+        cargando.style.display = 'none';
 
+        mostrarResultado(
+          'No fue posible comunicarse con el servidor. Verifica tu conexión a internet.',
+          'error'
+        );
+
+        console.error(error);
+
+      } finally {
+
+        procesando = false;
+
+      }
     }
 
 
-    caja.className =
-        'resultado error';
-
-
-    caja.innerHTML = `
-
-        <div class="icono">
-            ❌
-        </div>
-
-        <div>
-            ${escapar(data.mensaje)}
-        </div>
-
-        ${
-            data.id
-            ?
-            `
-            <div class="id">
-                ID:
-                ${escapar(data.id)}
-            </div>
-            `
-            :
-            ''
-        }
-
-    `;
-
-}
-
-
-// ==================================================
-// PROCESANDO
-// ==================================================
-
-function mostrarProcesando() {
-
-
-    const caja =
-        document.getElementById(
-            'resultado'
-        );
-
-
-    caja.className =
-        'resultado';
-
-
-    caja.innerHTML = `
-
-        <div class="icono">
-            ⏳
-        </div>
-
-        <div>
-            Registrando asistencia...
-        </div>
-
-    `;
-
-}
-
-
-// ==================================================
-// ERROR
-// ==================================================
-
-function mostrarError(mensaje) {
-
-
-    const caja =
-        document.getElementById(
-            'resultado'
-        );
-
-
-    caja.className =
-        'resultado error';
-
-
-    caja.innerHTML = `
-
-        <div class="icono">
-            ❌
-        </div>
-
-        <div>
-            ${escapar(mensaje)}
-        </div>
-
-    `;
-
-}
-
-
-// ==================================================
-// PROTECCIÓN HTML
-// ==================================================
-
-function escapar(texto) {
-
-
-    if (
-        texto === null ||
-        texto === undefined
+    /*
+     * Mostrar resultado.
+     */
+    function mostrarResultado(
+      contenido,
+      tipo
     ) {
 
-        return '';
+      const resultado =
+        document.getElementById('resultado');
 
+      resultado.innerHTML = contenido;
+
+      resultado.className = tipo;
+
+      resultado.style.display = 'block';
     }
 
 
-    return String(texto)
+    /*
+     * Limpiar resultado.
+     */
+    function limpiarResultado() {
 
-        .replace(
-            /&/g,
-            '&amp;'
-        )
+      const resultado =
+        document.getElementById('resultado');
 
-        .replace(
-            /</g,
-            '&lt;'
-        )
+      resultado.innerHTML = '';
 
-        .replace(
-            />/g,
-            '&gt;'
-        )
+      resultado.className = '';
 
-        .replace(
-            /"/g,
-            '&quot;'
-        )
-
-        .replace(
-            /'/g,
-            '&#039;'
-        );
-
-}
+      resultado.style.display = 'none';
+    }
 
 
-// ==================================================
-// INICIAR ESCÁNER
-// ==================================================
+    /*
+     * Evitar insertar texto no confiable como HTML.
+     */
+    function escaparHTML(texto) {
 
-function iniciarScanner() {
+      return String(texto || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
 
-
-    const scanner =
-        new Html5QrcodeScanner(
-
-            'reader',
-
-            {
-
-                fps: 10,
-
-                qrbox: function(
-                    viewfinderWidth,
-                    viewfinderHeight
-                ) {
-
-                    const size =
-                        Math.min(
-                            viewfinderWidth,
-                            viewfinderHeight
-                        ) * 0.70;
-
-                    return {
-
-                        width: Math.floor(size),
-
-                        height: Math.floor(size)
-
-                    };
-
-                },
-
-                rememberLastUsedCamera: true,
-
-                aspectRatio: 1.0
-
-            },
-
-            false
-
-        );
-
-
-    scanner.render(
-
-        qrEncontrado,
-
-        function(error) {
-
-            // No mostramos los errores
-            // normales mientras busca QR
-
-        }
-
-    );
-
-}
-
-
-// ==================================================
-// INICIAR
-// ==================================================
-
-iniciarScanner();
-
-
-</script>
-
+  </script>
 
 </body>
-
 </html>
