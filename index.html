@@ -620,35 +620,54 @@ async function qrEncontrado(texto) {
 function extraerID(texto) {
 
   const contenido =
-    String(texto || "").trim();
+    String(texto || '').trim();
 
+  console.log("CONTENIDO COMPLETO DEL QR:", contenido);
+
+  // Folio: YTC-004
   let coincidencia =
     contenido.match(
-      /ID\s*:\s*([A-Za-z0-9_-]+)/i
+      /folio\s*[:=]\s*([A-Za-z0-9_-]+)/i
     );
 
   if (coincidencia) {
+    console.log("FOLIO ENCONTRADO:", coincidencia[1]);
     return coincidencia[1].trim();
   }
 
+  // ID: YTC-004
   coincidencia =
     contenido.match(
-      /id\s*=\s*([A-Za-z0-9_-]+)/i
+      /ID\s*[:=]\s*([A-Za-z0-9_-]+)/i
     );
 
   if (coincidencia) {
+    console.log("ID ENCONTRADO:", coincidencia[1]);
     return coincidencia[1].trim();
   }
 
+  // Si el QR solamente contiene YTC-004
+  coincidencia =
+    contenido.match(
+      /\bYTC-\d+\b/i
+    );
+
+  if (coincidencia) {
+    console.log("YTC ENCONTRADO:", coincidencia[0]);
+    return coincidencia[0].trim();
+  }
+
+  // Último intento: QR solamente contiene el folio
   if (
     /^[A-Za-z0-9_-]+$/.test(contenido)
   ) {
-
+    console.log("QR ES EL FOLIO:", contenido);
     return contenido;
-
   }
 
-  return "";
+  console.log("NO SE ENCONTRÓ FOLIO EN QR");
+
+  return '';
 }
 
 
