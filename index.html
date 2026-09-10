@@ -251,125 +251,136 @@
   </div>
 
   <script>
-    /*
-     * Reemplaza esta URL por la URL de tu aplicación web de Apps Script.
-     */
-    const APPS_SCRIPT_URL =
-      'https://script.google.com/macros/s/AKfycbyTSAMuABXVKHaqTme4KdtgGGS77gi0DMJJ-dbzm8JMkGLEEm7MSJcESK7ZWyy3Z2pGDQ/exec';
+
+const APPS_SCRIPT_URL =
+  'https://script.google.com/macros/s/AKfycbyTSAMuABXVKHaqTme4KdtgGGS77gi0DMJJ-dbzm8JMkGLEEm7MSjC...' +
+  '/exec';
 
 
-    /*
-     * Actividades reales del congreso.
-     */
-    const actividades = {
+/****************************************************
+ * ACTIVIDADES
+ ****************************************************/
 
-  dia1: [
+const actividades = {
 
-    '09:30 Ponencia Magistral: Trauma, cuidados colectivos y reparación feminista frente a las violencias sexuales. Creer y cuidar a quien sostiene la vida.',
+  "Día 1 · 28 de septiembre": [
 
-    '11:30 Taller 1: Recursos feministas para afrontar las violencias sexuales contra niñeces y adolescencias.',
+    "09:30 Ponencia Magistral: Trauma, cuidados colectivos y reparación feminista frente a las violencias sexuales. Creer y cuidar a quien sostiene la vida.",
 
-    '11:30 Taller 2: Recursos legales para profesionales. Herramientas desde el territorio. Experiencias de México y Argentina.',
+    "11:30 Taller 1: Recursos feministas para afrontar las violencias sexuales contra niñeces y adolescencias.",
 
-    '11:30 Panel sobre violencias sexuales digitales y desafíos en entornos digitales.'
+    "11:30 Taller 2: Recursos legales para profesionales. Herramientas desde el territorio. Experiencias de México y Argentina.",
+
+    "11:30 Panel sobre violencias sexuales digitales y desafíos en entornos digitales."
+
   ],
 
-  dia2: [
+  "Día 2 · 29 de septiembre": [
 
-    '09:15 Conferencia Magistral: Modelos de caridad vs modelos de justicia social: tensiones en el manejo de financiamiento en organizaciones sin fines de lucro.',
+    "09:15 Conferencia Magistral: Modelos de caridad vs modelos de justicia social: tensiones en el manejo de financiamiento en organizaciones sin fines de lucro.",
 
-    '11:30 Conferencia interactiva: Recursos legales feministas en procesos de violencias sexuales para personas cuidadoras.',
+    "11:30 Conferencia interactiva: Recursos legales feministas en procesos de violencias sexuales para personas cuidadoras.",
 
-    '11:30 Taller: Educación integral de las sexualidades como factor de protección.',
+    "11:30 Taller: Educación integral de las sexualidades como factor de protección.",
 
-    '13:30 Ponencia Magistral de Cierre: Resistir y reinventarse: desafíos actuales y futuros de la cooperación internacional en América Latina y el Caribe.'
+    "13:30 Ponencia Magistral de Cierre: Resistir y reinventarse: desafíos actuales y futuros de la cooperación internacional en América Latina y el Caribe."
+
   ]
 
 };
 
-    let html5QrCode = null;
-    let escaneando = false;
-    let procesando = false;
+
+let html5QrCode = null;
+let escaneando = false;
+let procesando = false;
 
 
-    /*
-     * Cargar actividades según el día seleccionado.
-     */
-   function cargarActividades() {
+/****************************************************
+ * CARGAR ACTIVIDADES
+ ****************************************************/
 
-  const diaSelect = document.getElementById('dia');
-  const selectActividad = document.getElementById('actividad');
-  const seleccion = document.getElementById('seleccion');
+function cargarActividades() {
 
-  const dia = diaSelect.value.trim();
+  const dia =
+    document.getElementById("dia").value;
 
-  // Limpiar actividades anteriores
-  selectActividad.innerHTML = '';
+  const selectActividad =
+    document.getElementById("actividad");
 
-  // Ocultar resumen
-  seleccion.style.display = 'none';
+  const seleccion =
+    document.getElementById("seleccion");
 
-  // Si no se seleccionó día
+  // Limpiar
+  selectActividad.innerHTML = "";
+
+  seleccion.style.display = "none";
+
+  // No hay día seleccionado
   if (!dia) {
 
     selectActividad.disabled = true;
 
-    const opcion = document.createElement('option');
+    const opcion =
+      document.createElement("option");
 
-    opcion.value = '';
-    opcion.textContent = 'Primero selecciona un día';
+    opcion.value = "";
+    opcion.textContent =
+      "Primero selecciona un día";
 
     selectActividad.appendChild(opcion);
 
     return;
   }
 
-  // Buscar las actividades del día
-  const listaActividades = actividades[dia];
+  // Obtener actividades
+  const lista =
+    actividades[dia];
 
-  // Si no encontramos el día
-  if (!listaActividades) {
+  // Verificar
+  if (!lista) {
 
     selectActividad.disabled = true;
 
-    const opcion = document.createElement('option');
+    const opcion =
+      document.createElement("option");
 
-    opcion.value = '';
-    opcion.textContent = 'No se encontraron actividades';
+    opcion.value = "";
+    opcion.textContent =
+      "No se encontraron actividades";
 
     selectActividad.appendChild(opcion);
 
     console.error(
-      'No se encontraron actividades para:',
+      "No existen actividades para:",
       dia
     );
 
     console.log(
-      'Días disponibles:',
+      "Días disponibles:",
       Object.keys(actividades)
     );
 
     return;
   }
 
-  // Habilitar selector
+  // Habilitar
   selectActividad.disabled = false;
 
-  // Opción inicial
-  const opcionInicial =
-    document.createElement('option');
+  // Primera opción
+  const inicial =
+    document.createElement("option");
 
-  opcionInicial.value = '';
-  opcionInicial.textContent =
-    'Selecciona una actividad';
+  inicial.value = "";
+  inicial.textContent =
+    "Selecciona una actividad";
 
-  selectActividad.appendChild(opcionInicial);
+  selectActividad.appendChild(inicial);
 
-  // Cargar actividades
-  listaActividades.forEach(function(actividad) {
+  // Agregar actividades
+  lista.forEach(function(actividad) {
 
     const opcion =
-      document.createElement('option');
+      document.createElement("option");
 
     opcion.value = actividad;
     opcion.textContent = actividad;
@@ -378,425 +389,484 @@
 
   });
 
-  // Mostrar la selección cuando cambie
   selectActividad.onchange =
     mostrarSeleccion;
-
 }
 
-      selectActividad.disabled = false;
 
-      const opcionInicial =
-        document.createElement('option');
+/****************************************************
+ * MOSTRAR SELECCIÓN
+ ****************************************************/
 
-      opcionInicial.value = '';
-      opcionInicial.textContent =
-        'Selecciona una actividad';
+function mostrarSeleccion() {
 
-      selectActividad.appendChild(opcionInicial);
+  const dia =
+    document.getElementById("dia").value;
 
-      actividades[dia].forEach(function(actividad) {
+  const actividad =
+    document.getElementById("actividad").value;
 
-        const opcion =
-          document.createElement('option');
+  const seleccion =
+    document.getElementById("seleccion");
 
-        opcion.value = actividad;
-        opcion.textContent = actividad;
+  if (!dia || !actividad) {
 
-        selectActividad.appendChild(opcion);
+    seleccion.style.display =
+      "none";
 
-      });
+    return;
+  }
 
-      selectActividad.onchange = mostrarSeleccion;
+  seleccion.innerHTML =
+    "<strong>Día:</strong> " +
+    escaparHTML(dia) +
+    "<br><strong>Actividad:</strong> " +
+    escaparHTML(actividad);
+
+  seleccion.style.display =
+    "block";
+}
+
+
+/****************************************************
+ * INICIAR ESCÁNER
+ ****************************************************/
+
+async function iniciarEscaner() {
+
+  const dia =
+    document.getElementById("dia").value;
+
+  const actividad =
+    document.getElementById("actividad").value;
+
+  if (!dia) {
+
+    mostrarResultado(
+      "Selecciona el día de la actividad.",
+      "aviso"
+    );
+
+    return;
+  }
+
+  if (!actividad) {
+
+    mostrarResultado(
+      "Selecciona la actividad antes de iniciar el escáner.",
+      "aviso"
+    );
+
+    return;
+  }
+
+  if (escaneando) {
+    return;
+  }
+
+  document.getElementById("reader").style.display =
+    "block";
+
+  document.getElementById("instrucciones").style.display =
+    "block";
+
+  document.getElementById("btnIniciar").style.display =
+    "none";
+
+  document.getElementById("btnDetener").style.display =
+    "block";
+
+  limpiarResultado();
+
+  html5QrCode =
+    new Html5Qrcode("reader");
+
+  escaneando = true;
+
+  try {
+
+    await html5QrCode.start(
+
+      {
+        facingMode: "environment"
+      },
+
+      {
+        fps: 10,
+
+        qrbox: {
+          width: 230,
+          height: 230
+        },
+
+        aspectRatio: 1.0
+      },
+
+      qrEncontrado,
+
+      function(errorMessage) {
+        // Ignorar errores momentáneos
+      }
+
+    );
+
+  } catch (error) {
+
+    escaneando = false;
+
+    document.getElementById("reader").style.display =
+      "none";
+
+    document.getElementById("instrucciones").style.display =
+      "none";
+
+    document.getElementById("btnIniciar").style.display =
+      "block";
+
+    document.getElementById("btnDetener").style.display =
+      "none";
+
+    mostrarResultado(
+      "No fue posible abrir la cámara. Verifica los permisos del navegador.",
+      "error"
+    );
+
+    console.error(error);
+  }
+}
+
+
+/****************************************************
+ * DETENER ESCÁNER
+ ****************************************************/
+
+async function detenerEscaner() {
+
+  if (html5QrCode && escaneando) {
+
+    try {
+
+      await html5QrCode.stop();
+
+    } catch (error) {
+
+      console.error(error);
+
+    }
+  }
+
+  escaneando = false;
+
+  document.getElementById("reader").style.display =
+    "none";
+
+  document.getElementById("instrucciones").style.display =
+    "none";
+
+  document.getElementById("btnIniciar").style.display =
+    "block";
+
+  document.getElementById("btnDetener").style.display =
+    "none";
+}
+
+
+/****************************************************
+ * QR ENCONTRADO
+ ****************************************************/
+
+async function qrEncontrado(texto) {
+
+  if (procesando) {
+    return;
+  }
+
+  procesando = true;
+
+  const id =
+    extraerID(texto);
+
+  if (!id) {
+
+    mostrarResultado(
+      "El código QR no contiene un folio válido.",
+      "error"
+    );
+
+    procesando = false;
+
+    return;
+  }
+
+  const dia =
+    document.getElementById("dia").value;
+
+  const actividad =
+    document.getElementById("actividad").value;
+
+  await detenerEscaner();
+
+  await registrarAsistencia(
+    id,
+    dia,
+    actividad
+  );
+}
+
+
+/****************************************************
+ * EXTRAER ID DEL QR
+ ****************************************************/
+
+function extraerID(texto) {
+
+  const contenido =
+    String(texto || "").trim();
+
+  let coincidencia =
+    contenido.match(
+      /ID\s*:\s*([A-Za-z0-9_-]+)/i
+    );
+
+  if (coincidencia) {
+    return coincidencia[1].trim();
+  }
+
+  coincidencia =
+    contenido.match(
+      /id\s*=\s*([A-Za-z0-9_-]+)/i
+    );
+
+  if (coincidencia) {
+    return coincidencia[1].trim();
+  }
+
+  if (
+    /^[A-Za-z0-9_-]+$/.test(contenido)
+  ) {
+
+    return contenido;
+
+  }
+
+  return "";
+}
+
+
+/****************************************************
+ * REGISTRAR ASISTENCIA
+ ****************************************************/
+
+async function registrarAsistencia(
+  id,
+  dia,
+  actividad
+) {
+
+  const cargando =
+    document.getElementById("cargando");
+
+  cargando.style.display =
+    "block";
+
+  try {
+
+    const url =
+      APPS_SCRIPT_URL +
+      "?id=" + encodeURIComponent(id) +
+      "&dia=" + encodeURIComponent(dia) +
+      "&actividad=" + encodeURIComponent(actividad);
+
+    console.log("Enviando:", url);
+
+    const respuesta =
+      await fetch(url);
+
+    const datos =
+      await respuesta.json();
+
+    console.log("Respuesta:", datos);
+
+    cargando.style.display =
+      "none";
+
+    if (datos.ok) {
+
+      mostrarResultado(
+
+        "<div class='dato'>" +
+        "<strong>✅ ASISTENCIA REGISTRADA</strong>" +
+        "</div>" +
+
+        "<div class='dato'>" +
+        "<strong>Folio:</strong> " +
+        escaparHTML(datos.id) +
+        "</div>" +
+
+        "<div class='dato'>" +
+        "<strong>Nombre:</strong> " +
+        escaparHTML(datos.nombre) +
+        "</div>" +
+
+        "<div class='dato'>" +
+        "<strong>Día:</strong> " +
+        escaparHTML(datos.dia) +
+        "</div>" +
+
+        "<div class='dato'>" +
+        "<strong>Actividad:</strong> " +
+        escaparHTML(datos.actividad) +
+        "</div>" +
+
+        "<div class='dato'>" +
+        "<strong>Hora:</strong> " +
+        escaparHTML(datos.hora) +
+        "</div>",
+
+        "exito"
+      );
+
     }
 
-
-    /*
-     * Mostrar la selección actual.
-     */
-    function mostrarSeleccion() {
-
-      const dia =
-        document.getElementById('dia').value;
-
-      const actividad =
-        document.getElementById('actividad').value;
-
-      const seleccion =
-        document.getElementById('seleccion');
-
-      if (!dia || !actividad) {
-
-        seleccion.style.display = 'none';
-
-        return;
-      }
-
-      seleccion.innerHTML =
-        '<strong>Día:</strong> ' +
-        escaparHTML(dia) +
-        '<br><strong>Actividad:</strong> ' +
-        escaparHTML(actividad);
-
-      seleccion.style.display = 'block';
-    }
-
-
-    /*
-     * Iniciar escáner.
-     */
-    async function iniciarEscaner() {
-
-      const dia =
-        document.getElementById('dia').value;
-
-      const actividad =
-        document.getElementById('actividad').value;
-
-      if (!dia) {
-        mostrarResultado(
-          'Selecciona el día de la actividad.',
-          'aviso'
-        );
-        return;
-      }
-
-      if (!actividad) {
-        mostrarResultado(
-          'Selecciona la actividad antes de iniciar el escáner.',
-          'aviso'
-        );
-        return;
-      }
-
-      if (escaneando) {
-        return;
-      }
-
-      document.getElementById('reader').style.display = 'block';
-
-      document.getElementById('instrucciones').style.display =
-        'block';
-
-      document.getElementById('btnIniciar').style.display =
-        'none';
-
-      document.getElementById('btnDetener').style.display =
-        'block';
-
-      limpiarResultado();
-
-      html5QrCode =
-        new Html5Qrcode('reader');
-
-      escaneando = true;
-
-      try {
-
-        await html5QrCode.start(
-          {
-            facingMode: 'environment'
-          },
-          {
-            fps: 10,
-            qrbox: {
-              width: 230,
-              height: 230
-            },
-            aspectRatio: 1.0
-          },
-          qrEncontrado,
-          function(errorMessage) {
-            // No mostrar errores momentáneos de lectura.
-          }
-        );
-
-      } catch (error) {
-
-        escaneando = false;
-
-        document.getElementById('reader').style.display =
-          'none';
-
-        document.getElementById('instrucciones').style.display =
-          'none';
-
-        document.getElementById('btnIniciar').style.display =
-          'block';
-
-        document.getElementById('btnDetener').style.display =
-          'none';
-
-        mostrarResultado(
-          'No fue posible abrir la cámara. Verifica los permisos del navegador.',
-          'error'
-        );
-
-        console.error(error);
-      }
-    }
-
-
-    /*
-     * Detener escáner.
-     */
-  await function detenerEscaner() {
-
-      if (html5QrCode && escaneando) {
-
-        try {
-          await html5QrCode.stop();
-        } catch (error) {
-          console.error(error);
-        }
-
-      }
-
-      escaneando = false;
-
-      document.getElementById('reader').style.display =
-        'none';
-
-      document.getElementById('instrucciones').style.display =
-        'none';
-
-      document.getElementById('btnIniciar').style.display =
-        'block';
-
-      document.getElementById('btnDetener').style.display =
-        'none';
-    }
-
-
-    /*
-     * Se ejecuta cuando se detecta un código QR.
-     */
-    async function qrEncontrado(texto) {
-
-      if (procesando) {
-        return;
-      }
-
-      procesando = true;
-
-      const id = extraerID(texto);
-
-      if (!id) {
-
-        mostrarResultado(
-          'El código QR no contiene un folio válido.',
-          'error'
-        );
-
-        procesando = false;
-
-        return;
-      }
-
-      const dia =
-        document.getElementById('dia').value;
-
-      const actividad =
-        document.getElementById('actividad').value;
-
-      await detenerEscaner();
-
-    await registrarAsistencia(id, dia, actividad);
-    }
-
-
-    /*
-     * Extraer el folio del QR.
-     *
-     * Acepta:
-     * ID: YTC-004
-     * id=YTC-004
-     * YTC-004
-     */
-    function extraerID(texto) {
-
-      const contenido =
-        String(texto || '').trim();
-
-      let coincidencia =
-        contenido.match(
-          /ID\s*:\s*([A-Za-z0-9_-]+)/i
-        );
-
-      if (coincidencia) {
-        return coincidencia[1].trim();
-      }
-
-      coincidencia =
-        contenido.match(
-          /id\s*=\s*([A-Za-z0-9_-]+)/i
-        );
-
-      if (coincidencia) {
-        return coincidencia[1].trim();
-      }
-
-      if (
-        /^[A-Za-z0-9_-]+$/.test(contenido)
-      ) {
-        return contenido;
-      }
-
-      return '';
-    }
-
-
-    /*
-     * Enviar asistencia al Apps Script.
-     */
-    async function registrarAsistencia(
-      id,
-      dia,
-      actividad
+    else if (
+      datos.tipo === "DUPLICADO"
     ) {
 
-      const cargando =
-        document.getElementById('cargando');
+      mostrarResultado(
 
-      cargando.style.display = 'block';
+        "<div class='dato'>" +
+        "<strong>⚠️ ASISTENCIA DUPLICADA</strong>" +
+        "</div>" +
 
-      try {
+        "<div class='dato'>" +
+        escaparHTML(datos.mensaje) +
+        "</div>" +
 
-        const url =
-          APPS_SCRIPT_URL +
-          '?id=' + encodeURIComponent(id) +
-          '&dia=' + encodeURIComponent(dia) +
-          '&actividad=' + encodeURIComponent(actividad);
+        "<div class='dato'>" +
+        "<strong>Nombre:</strong> " +
+        escaparHTML(datos.nombre || "") +
+        "</div>" +
 
-        const respuesta =
-          await fetch(url);
+        "<div class='dato'>" +
+        "<strong>Actividad:</strong> " +
+        escaparHTML(datos.actividad || "") +
+        "</div>",
 
-        const datos =
-          await respuesta.json();
+        "aviso"
+      );
 
-        cargando.style.display = 'none';
-
-        if (datos.ok) {
-
-          mostrarResultado(
-            '<div class="dato"><strong>Asistencia registrada</strong></div>' +
-            '<div class="dato"><strong>Folio:</strong> ' +
-            escaparHTML(datos.id) +
-            '</div>' +
-            '<div class="dato"><strong>Nombre:</strong> ' +
-            escaparHTML(datos.nombre) +
-            '</div>' +
-            '<div class="dato"><strong>Día:</strong> ' +
-            escaparHTML(datos.dia) +
-            '</div>' +
-            '<div class="dato"><strong>Actividad:</strong> ' +
-            escaparHTML(datos.actividad) +
-            '</div>' +
-            '<div class="dato"><strong>Hora:</strong> ' +
-            escaparHTML(datos.hora) +
-            '</div>',
-            'exito'
-          );
-
-        } else if (datos.tipo === 'DUPLICADO') {
-
-          mostrarResultado(
-            '<div class="dato"><strong>Asistencia duplicada</strong></div>' +
-            '<div class="dato">' +
-            escaparHTML(datos.mensaje) +
-            '</div>' +
-            '<div class="dato"><strong>Nombre:</strong> ' +
-            escaparHTML(datos.nombre || '') +
-            '</div>' +
-            '<div class="dato"><strong>Actividad:</strong> ' +
-            escaparHTML(datos.actividad || '') +
-            '</div>',
-            'aviso'
-          );
-
-        } else {
-
-          mostrarResultado(
-            '<div class="dato"><strong>No se registró la asistencia</strong></div>' +
-            '<div class="dato">' +
-            escaparHTML(datos.mensaje || 'Ocurrió un error') +
-            '</div>' +
-            '<div class="dato"><strong>Nombre:</strong> ' +
-            escaparHTML(datos.nombre || '') +
-            '</div>',
-            'error'
-          );
-
-        }
-
-      } catch (error) {
-
-        cargando.style.display = 'none';
-
-        mostrarResultado(
-          'No fue posible comunicarse con el servidor. Verifica tu conexión a internet.',
-          'error'
-        );
-
-        console.error(error);
-
-      } finally {
-
-        procesando = false;
-
-      }
     }
 
+    else {
 
-    /*
-     * Mostrar resultado.
-     */
-    function mostrarResultado(
-      contenido,
-      tipo
-    ) {
+      mostrarResultado(
 
-      const resultado =
-        document.getElementById('resultado');
+        "<div class='dato'>" +
+        "<strong>❌ NO SE REGISTRÓ</strong>" +
+        "</div>" +
 
-      resultado.innerHTML = contenido;
+        "<div class='dato'>" +
+        escaparHTML(
+          datos.mensaje ||
+          "Ocurrió un error"
+        ) +
+        "</div>" +
 
-      resultado.className = tipo;
+        "<div class='dato'>" +
+        "<strong>Nombre:</strong> " +
+        escaparHTML(
+          datos.nombre || ""
+        ) +
+        "</div>",
 
-      resultado.style.display = 'block';
+        "error"
+      );
     }
 
+  }
 
-    /*
-     * Limpiar resultado.
-     */
-    function limpiarResultado() {
+  catch (error) {
 
-      const resultado =
-        document.getElementById('resultado');
+    cargando.style.display =
+      "none";
 
-      resultado.innerHTML = '';
+    mostrarResultado(
 
-      resultado.className = '';
+      "No fue posible comunicarse con el servidor.",
 
-      resultado.style.display = 'none';
-    }
+      "error"
+    );
+
+    console.error(error);
+
+  }
+
+  finally {
+
+    procesando = false;
+
+  }
+}
 
 
-    /*
-     * Evitar insertar texto no confiable como HTML.
-     */
-    function escaparHTML(texto) {
+/****************************************************
+ * MOSTRAR RESULTADO
+ ****************************************************/
 
-      return String(texto || '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-    }
+function mostrarResultado(
+  contenido,
+  tipo
+) {
 
-  </script>
+  const resultado =
+    document.getElementById("resultado");
+
+  resultado.innerHTML =
+    contenido;
+
+  resultado.className =
+    tipo;
+
+  resultado.style.display =
+    "block";
+}
+
+
+/****************************************************
+ * LIMPIAR RESULTADO
+ ****************************************************/
+
+function limpiarResultado() {
+
+  const resultado =
+    document.getElementById("resultado");
+
+  resultado.innerHTML =
+    "";
+
+  resultado.className =
+    "";
+
+  resultado.style.display =
+    "none";
+}
+
+
+/****************************************************
+ * ESCAPAR HTML
+ ****************************************************/
+
+function escaparHTML(texto) {
+
+  return String(texto || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+</script>
 
 </body>
 </html>
