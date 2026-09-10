@@ -582,7 +582,57 @@ async function detenerEscaner() {
  * QR ENCONTRADO
  ****************************************************/
 
+
+/****************************************************
+ * QR ENCONTRADO
+ ****************************************************/
+
 async function qrEncontrado(texto) {
+
+  // Evitar que el mismo QR se procese varias veces
+  if (procesando) {
+    return;
+  }
+
+  procesando = true;
+
+  const id = extraerID(texto);
+
+  if (!id) {
+
+    mostrarResultado(
+      "El código QR no contiene un folio válido.",
+      "error"
+    );
+
+    procesando = false;
+
+    // Reactivar automáticamente
+    setTimeout(function() {
+      iniciarEscaner();
+    }, 1500);
+
+    return;
+  }
+
+  const dia =
+    document.getElementById("dia").value;
+
+  const actividad =
+    document.getElementById("actividad").value;
+
+  // Detener cámara mientras se procesa
+  await detenerEscaner();
+
+  await registrarAsistencia(
+    id,
+    dia,
+    actividad
+  );
+}
+
+
+/*async function qrEncontrado(texto) {
 
   if (procesando) {
     return;
@@ -619,7 +669,7 @@ async function qrEncontrado(texto) {
     actividad
   );
 }
-
+*/
 
 /****************************************************
  * EXTRAER ID DEL QR
@@ -715,6 +765,39 @@ async function registrarAsistencia(
 
     cargando.style.display =
       "none";
+  
+/*async function registrarAsistencia(
+  id,
+  dia,
+  actividad
+) {
+
+  const cargando =
+    document.getElementById("cargando");
+
+  cargando.style.display =
+    "block";
+
+  try {
+
+    const url =
+      APPS_SCRIPT_URL +
+      "?id=" + encodeURIComponent(id) +
+      "&dia=" + encodeURIComponent(dia) +
+      "&actividad=" + encodeURIComponent(actividad);
+
+    console.log("Enviando:", url);
+
+    const respuesta =
+      await fetch(url);
+
+    const datos =
+      await respuesta.json();
+
+    console.log("Respuesta:", datos);
+
+    cargando.style.display =
+      "none";
 
     if (datos.ok) {
 
@@ -776,7 +859,7 @@ async function registrarAsistencia(
        /* "<div class='dato'>" +
         "<strong>Actividad:</strong> " +
         escaparHTML(datos.actividad || "") +
-        "</div>",*/
+        "</div>",
 
         "aviso"
       );
@@ -833,8 +916,163 @@ async function registrarAsistencia(
 
   }
 }
+*/
+ /************************************************
+     * ASISTENCIA REGISTRADA
+     ************************************************/
+
+    if (datos.ok) {
+
+      mostrarResultado(
+
+        "<div class='dato'>" +
+        "<strong>✅ ASISTENCIA REGISTRADA</strong>" +
+        "</div>" +
+
+        "<div class='dato'>" +
+        "<strong>Folio:</strong> " +
+        escaparHTML(datos.id) +
+        "</div>" +
+
+        "<div class='dato'>" +
+        "<strong>Nombre:</strong> " +
+        escaparHTML(datos.nombre) +
+        "</div>" +
+
+        "<div class='dato'>" +
+        "<strong>Día:</strong> " +
+        escaparHTML(datos.dia) +
+        "</div>" +
+
+        "<div class='dato'>" +
+        "<strong>Actividad:</strong> " +
+        escaparHTML(datos.actividad) +
+        "</div>" +
+
+        "<div class='dato'>" +
+        "<strong>Hora:</strong> " +
+        escaparHTML(datos.hora) +
+        "</div>",
+
+        "exito"
+      );
+
+    }
 
 
+    /************************************************
+     * ASISTENCIA DUPLICADA
+     ************************************************/
+
+    else if (
+      datos.tipo === "DUPLICADO"
+    ) {
+
+      mostrarResultado(
+
+        "<div class='dato'>" +
+        "<strong>⚠️ ASISTENCIA DUPLICADA</strong>" +
+        "</div>" +
+
+        "<div class='dato'>" +
+        escaparHTML(datos.mensaje) +
+        "</div>" +
+
+        "<div class='dato'>" +
+        "<strong>Nombre:</strong> " +
+        escaparHTML(datos.nombre || "") +
+        "</div>" +
+
+        "<div class='dato'>" +
+        "<strong>Actividad:</strong> " +
+        escaparHTML(datos.actividad || "") +
+        "</div>",
+
+        "aviso"
+      );
+
+    }
+
+
+    /************************************************
+     * ERROR / NO INSCRITO / NO ENCONTRADO
+     ************************************************/
+
+    else {
+
+      mostrarResultado(
+
+        "<div class='dato'>" +
+        "<strong>❌ NO SE REGISTRÓ</strong>" +
+        "</div>" +
+
+        "<div class='dato'>" +
+        escaparHTML(
+          datos.mensaje ||
+          "Ocurrió un error"
+        ) +
+        "</div>" +
+
+        "<div class='dato'>" +
+        "<strong>Nombre:</strong> " +
+        escaparHTML(
+          datos.nombre || ""
+        ) +
+        "</div>",
+
+        "error"
+      );
+
+    }
+
+
+  }
+
+  catch (error) {
+
+    cargando.style.display =
+      "none";
+
+    mostrarResultado(
+
+      "<div class='dato'>" +
+      "<strong>❌ ERROR</strong>" +
+      "</div>" +
+
+      "<div class='dato'>" +
+      "No fue posible comunicarse con el servidor." +
+      "</div>",
+
+      "error"
+    );
+
+    console.error(error);
+
+  }
+
+
+  finally {
+
+    procesando = false;
+
+
+    /************************************************
+     * REACTIVAR ESCÁNER AUTOMÁTICAMENTE
+     *
+     * Espera 1.5 segundos para que el operador
+     * pueda ver el resultado y después vuelve
+     * a activar la cámara.
+     ************************************************/
+
+    setTimeout(function() {
+
+      iniciarEscaner();
+
+    }, 1500);
+
+  }
+
+}
 /****************************************************
  * MOSTRAR RESULTADO
  ****************************************************/
