@@ -294,36 +294,94 @@
     /*
      * Cargar actividades según el día seleccionado.
      */
-    function cargarActividades() {
+   function cargarActividades() {
 
-      const dia =
-        document.getElementById('dia').value;
+  const diaSelect = document.getElementById('dia');
+  const selectActividad = document.getElementById('actividad');
+  const seleccion = document.getElementById('seleccion');
 
-      const selectActividad =
-        document.getElementById('actividad');
+  const dia = diaSelect.value.trim();
 
-      const seleccion =
-        document.getElementById('seleccion');
+  // Limpiar actividades anteriores
+  selectActividad.innerHTML = '';
 
-      selectActividad.innerHTML = '';
+  // Ocultar resumen
+  seleccion.style.display = 'none';
 
-      seleccion.style.display = 'none';
+  // Si no se seleccionó día
+  if (!dia) {
 
-      if (!dia) {
+    selectActividad.disabled = true;
 
-        selectActividad.disabled = true;
+    const opcion = document.createElement('option');
 
-        const opcion =
-          document.createElement('option');
+    opcion.value = '';
+    opcion.textContent = 'Primero selecciona un día';
 
-        opcion.value = '';
-        opcion.textContent =
-          'Primero selecciona un día';
+    selectActividad.appendChild(opcion);
 
-        selectActividad.appendChild(opcion);
+    return;
+  }
 
-        return;
-      }
+  // Buscar las actividades del día
+  const listaActividades = actividades[dia];
+
+  // Si no encontramos el día
+  if (!listaActividades) {
+
+    selectActividad.disabled = true;
+
+    const opcion = document.createElement('option');
+
+    opcion.value = '';
+    opcion.textContent = 'No se encontraron actividades';
+
+    selectActividad.appendChild(opcion);
+
+    console.error(
+      'No se encontraron actividades para:',
+      dia
+    );
+
+    console.log(
+      'Días disponibles:',
+      Object.keys(actividades)
+    );
+
+    return;
+  }
+
+  // Habilitar selector
+  selectActividad.disabled = false;
+
+  // Opción inicial
+  const opcionInicial =
+    document.createElement('option');
+
+  opcionInicial.value = '';
+  opcionInicial.textContent =
+    'Selecciona una actividad';
+
+  selectActividad.appendChild(opcionInicial);
+
+  // Cargar actividades
+  listaActividades.forEach(function(actividad) {
+
+    const opcion =
+      document.createElement('option');
+
+    opcion.value = actividad;
+    opcion.textContent = actividad;
+
+    selectActividad.appendChild(opcion);
+
+  });
+
+  // Mostrar la selección cuando cambie
+  selectActividad.onchange =
+    mostrarSeleccion;
+
+}
 
       selectActividad.disabled = false;
 
