@@ -255,7 +255,7 @@
      * Reemplaza esta URL por la URL de tu aplicación web de Apps Script.
      */
     const APPS_SCRIPT_URL =
-      'https://script.google.com/macros/s/AKfycbxC0IHB94c0ojv7m6hcIqlhayxo6hXU0tzUjoRcY5vQZfNvLvDLQ5n7bwJwIen-X_YE-Q/exec';
+      'https://script.google.com/macros/s/AKfycbyTSAMuABXVKHaqTme4KdtgGGS77gi0DMJJ-dbzm8JMkGLEEm7MSJcESK7ZWyy3Z2pGDQ/exec';
 
 
     /*
@@ -481,7 +481,7 @@
     /*
      * Detener escáner.
      */
-    async function detenerEscaner() {
+  await function detenerEscaner() {
 
       if (html5QrCode && escaneando) {
 
@@ -542,7 +542,7 @@
 
       await detenerEscaner();
 
-      registrarAsistencia(id, dia, actividad);
+    await registrarAsistencia(id, dia, actividad);
     }
 
 
